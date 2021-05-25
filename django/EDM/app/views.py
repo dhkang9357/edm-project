@@ -34,7 +34,7 @@ def load_map(request):
     # t = db.run_query('SELECT * FROM dhkang1.test_table where name = "아주대학교";')
     # print(type(t))
     
-    map = folium.Map(location=location, zoom_start=16)
+    map = folium.Map(location=location, zoom_start=16, width='100%', height='94.7%')
     popup = folium.Popup('경기도 수원시 영통구 월드컵로 206', min_width=200, max_width=400)
     folium.Marker(location=location, popup=popup).add_to(map)
 

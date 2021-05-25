@@ -1,31 +1,91 @@
 <html>
     <head>
         <title> title </title>
-        <link rel="stylesheet" href="../semantic.css">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/dropdown.min.css"/>
 
         <script src="../script.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-        <script src="../semantic.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/dropdown.min.js"></script>
     </head>
 
     <body>
-        <!--button onclick='on_button_click()'>asd</button-->
-        <div id='div_title' style='width: 100%; height: 100px;text-align: center'>
-            <font>title</font>
-        </div>
-        <div id='div_contents' style='width: 100%; height: 88%; text-align:center; margin:auto;'>
-            <div id='div_filter' style='width: 30%; height: 100%; float: left'>
-                <p>
-                    <select class="ui fluid search dropdown" multiple="">
-                        <!-- option value="">State</option -->
-                        <option value="AL">보호수</option>
-                        <option value="AK">문화재</option>
-                        <option value="AZ">화재</option>
-                    </select>
-                </p>
-                <button onclick="on_button_click()"> button </button>
+        <div id="title_wrapper" style="padding-left: 0.3%; padding-right: 0.3%; width: 100%; height: 4%;">
+            <div id="title" style="text-align: center; vertical-align: middle; border: 2px dashed red;">
+                <h1> title </h1>
             </div>
-            <div id='div_map' style='width: 69%; height: 100%; float: right'></div>
         </div>
+
+        <div id="content_wrapper" style="padding: 0.3%; height: 94.7%;">
+            <div id="filter" style="width: 20%; height: 100%; padding: 1%; padding-top: 10%; text-align: center; float: left; vertical-align: middle; border: 2px dashed blue;">
+                <h1> filter </h1>
+
+                <div id="type_wrapper" style="padding: 5%; width: 100%; border: 1px dashed black">
+                    <div style="padding-bottom: 3%;"> 분류 </div>
+                    <div>
+                        <select id="types" multiple="" class="ui fluid dropdown">
+                            <option value="">선택</option>
+                            <option value="보호수">보호수</option>
+                            <option value="문화재">문화재</option>
+                            <option value="화재">화재</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="island_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
+                    <div style="padding-bottom: 3%;"> 도 </div>
+                    <div>
+                        <select id="islands" class="ui selection dropdown">
+                            <option value="">선택</option>
+                            <option value="서울">서울</option>
+                            <option value="경기도">경기도</option>
+                            <option value="강원도">강원도</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="city_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
+                    <div style="padding-bottom: 3%;"> 시 </div>
+                    <div>
+                        <select id="cities" class="ui selection dropdown">
+                            <option value="">선택</option>
+                            <option value="수원시">수원시</option>
+                            <option value="화성시">화성시</option>
+                            <option value="성남시">성남시</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="button_wrapper" style="margin-top: 5%; padding: 5%; width: 100%">
+                    <button class="ui primary button" onclick="on_button()">
+                        보기
+                    </button>
+                </div>
+            </div>
+
+            <div id="map_wrapper" style="width: 79.7%; height: 100%; text-align: center; float: right; vertical-align: middle; border: 2px dashed green;">
+                <div id="map" style="width: 100%; height: 100%; padding: 0.3%; background-color: yellow; opacity: 0.5;">
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function on_button()
+            {
+                str = $('#types').dropdown('get value') + '\n';
+                str += $('#islands').dropdown('get value') + '\n';
+                str += $('#cities').dropdown('get value');
+                alert(str);
+
+                $.get('./get_map_data', function(data) {
+                    $('#map').html(data);
+                });
+            }
+            $(document).ready(function() {
+                $('.ui.dropdown').dropdown();
+            })
+        </script>
     </body>
 </html>

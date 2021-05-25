@@ -22,10 +22,6 @@ from app import scripts
 urlpatterns = [
     path('', views.index, name='index'),
     path('script.js', scripts.script),
-    path('dropdown.js', scripts.dropdown),
-
-    path('semantic.js', scripts.semantic_js),
-    path('semantic.css', scripts.semantic_css),
 
     path('get_map_data', views.load_map)
 ]
