@@ -37,11 +37,11 @@
                 <div id="island_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
                     <div style="padding-bottom: 3%;"> 도 </div>
                     <div>
-                        <select id="islands" class="ui selection dropdown">
+                        <select id="islands" class="ui selection dropdown" onchange="on_select_location()">
                             <option value="">선택</option>
-                            <option value="서울">서울</option>
+                            <!--option value="서울">서울</option>
                             <option value="경기도">경기도</option>
-                            <option value="강원도">강원도</option>
+                            <option value="강원도">강원도</option-->
                         </select>
                     </div>
                 </div>
@@ -51,9 +51,9 @@
                     <div>
                         <select id="cities" class="ui selection dropdown">
                             <option value="">선택</option>
-                            <option value="수원시">수원시</option>
+                            <!--option value="수원시">수원시</option>
                             <option value="화성시">화성시</option>
-                            <option value="성남시">성남시</option>
+                            <option value="성남시">성남시</option-->
                         </select>
                     </div>
                 </div>
@@ -74,17 +74,44 @@
         <script>
             function on_button()
             {
-                str = $('#types').dropdown('get value') + '\n';
-                str += $('#islands').dropdown('get value') + '\n';
-                str += $('#cities').dropdown('get value');
-                alert(str);
+                location_info = {'location': document.getElementById("islands").value,
+                                 'city': document.getElementById("cities").value};
 
-                $.get('./get_map_data', function(data) {
+                $.post('./get_map_data', location_info, function(data) {
                     $('#map').html(data);
                 });
             }
+
+            function on_select_location()
+            {
+                location_info = {'location': document.getElementById("islands").value};
+                element_city = document.getElementById('cities');
+                element_city.innerHTML = '<option value="">선택</option>'
+
+                $.post('./get_city', location_info, function(data) {
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        var opt = document.createElement('option');
+                        opt.value = data[i];
+                        opt.innerHTML = data[i];
+                        element_city.appendChild(opt);
+                    }
+                });
+            }
+
             $(document).ready(function() {
                 $('.ui.dropdown').dropdown();
+
+                $.get('./get_location', function(data) {
+                    element_island = document.getElementById('islands');
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        var opt = document.createElement('option');
+                        opt.value = data[i];
+                        opt.innerHTML = data[i];
+                        element_island.appendChild(opt);
+                    }
+                });
             })
         </script>
     </body>

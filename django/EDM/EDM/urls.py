@@ -23,5 +23,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('script.js', scripts.script),
 
-    path('get_map_data', views.load_map)
+    path('get_map_data', views.load_map),
+    path('get_location', views.load_location),
+    path('get_city', views.load_city),
 ]
