@@ -26,4 +26,5 @@ class Database(Singleton):
         cursor = self.connection.cursor()
         cursor.execute(query)
         ret = list(cursor.fetchall())
-        return ret if origin else [r[0] for r in ret] 
+        ret = ret[0] if len(ret) == 1 else [r for r in ret]
+        return ret

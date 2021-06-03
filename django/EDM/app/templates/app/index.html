@@ -27,17 +27,17 @@
                     <div>
                         <select id="types" multiple="" class="ui fluid dropdown">
                             <option value="">선택</option>
-                            <option value="보호수">보호수</option>
-                            <option value="문화재">문화재</option>
-                            <option value="화재">화재</option>
+                            <option value="Tree">보호수</option>
+                            <option value="Asset">문화재</option>
+                            <option value="Fire">화재</option>
                         </select>
                     </div>
                 </div>
 
-                <div id="island_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
-                    <div style="padding-bottom: 3%;"> 도 </div>
+                <div id="location_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
+                    <div style="padding-bottom: 3%;"> 지역 </div>
                     <div>
-                        <select id="islands" class="ui selection dropdown" onchange="on_select_location()">
+                        <select id="location" class="ui selection dropdown"> <!--onchange="on_select_location()"-->
                             <option value="">선택</option>
                             <!--option value="서울">서울</option>
                             <option value="경기도">경기도</option>
@@ -46,17 +46,14 @@
                     </div>
                 </div>
 
-                <div id="city_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
+                <!--div id="city_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
                     <div style="padding-bottom: 3%;"> 시 </div>
                     <div>
                         <select id="cities" class="ui selection dropdown">
                             <option value="">선택</option>
-                            <!--option value="수원시">수원시</option>
-                            <option value="화성시">화성시</option>
-                            <option value="성남시">성남시</option-->
                         </select>
                     </div>
-                </div>
+                </div-->
 
                 <div id="button_wrapper" style="margin-top: 5%; padding: 5%; width: 100%">
                     <button class="ui primary button" onclick="on_button()">
@@ -74,8 +71,7 @@
         <script>
             function on_button()
             {
-                location_info = {'location': document.getElementById("islands").value,
-                                 'city': document.getElementById("cities").value};
+                location_info = {'type': $('#types').dropdown('get value'), 'location': document.getElementById("location").value};
 
                 $.post('./get_map_data', location_info, function(data) {
                     $('#map').html(data);
@@ -84,7 +80,7 @@
 
             function on_select_location()
             {
-                location_info = {'location': document.getElementById("islands").value};
+                location_info = {'location': document.getElementById("location").value};
                 element_city = document.getElementById('cities');
                 element_city.innerHTML = '<option value="">선택</option>'
 
@@ -103,7 +99,7 @@
                 $('.ui.dropdown').dropdown();
 
                 $.get('./get_location', function(data) {
-                    element_island = document.getElementById('islands');
+                    element_island = document.getElementById('location');
                     for (var i = 0; i < data.length; i++)
                     {
                         var opt = document.createElement('option');
