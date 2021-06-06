@@ -29,9 +29,12 @@ def get_asset_info(id):
     asset_id = id[2:10]
     asset_city = id[-2:]
 
-    url = 'http://www.cha.go.kr/cha/SearchKindOpenapiDt.do?ccbaKdcd={}&ccbaAsno={}&ccbaCtcd={}'.format(asset_type, asset_id, asset_city)
+    try:
+        url = 'http://www.cha.go.kr/cha/SearchKindOpenapiDt.do?ccbaKdcd={}&ccbaAsno={}&ccbaCtcd={}'.format(asset_type, asset_id, asset_city)
 
-    response = requests.get(url)
+        response = requests.get(url)
+    except:
+        return None
 
     if response.status_code != 200:
         return None

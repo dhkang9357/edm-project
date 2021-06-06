@@ -9,7 +9,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def index(request):
-    return render(request, 'app/index.html')
+    # return render(request, 'app/index.html')
+    return render(request, 'app/index_staff.html')
 
 def load_location(request):
     db = Database.instance()
@@ -32,6 +33,9 @@ def load_city(request):
 
 def assign_tree_data(map, info):
     for index, location, id, type, y, x, address in info:
+        if y == 0 or x == 0:
+            continue
+
         desc = '보호수 종류: {}<br>보호수 지정번호: {}<br>주소: {}'.format(type, id, address)
         popup = folium.Popup(desc, min_width=200, max_width=400)
         folium.Marker(location=[y, x], popup=popup, icon=folium.Icon(color="green", icon="info-sign")).add_to(map)
@@ -62,7 +66,7 @@ def assign_asset_data(map, info):
         id = '{}-{}'.format(category_type[category], ''.join(number))
 
         desc = '문화재명: {}<br>문화재 지정번호: {}<br>주소: {}'.format(name, id, address)
-        popup = folium.Popup(desc, min_width=200, max_width=400)
+        popup = folium.Popup(desc, min_width=200, max_width=600)
         folium.Marker(location=[y, x], popup=popup, icon=folium.Icon(color="red", icon="info-sign")).add_to(map)
 
     return

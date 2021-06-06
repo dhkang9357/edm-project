@@ -1,0 +1,120 @@
+<html>
+    <head>
+        <title> title </title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/dropdown.min.css"/>
+
+        <script src="../script.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/dropdown.min.js"></script>
+    </head>
+
+    <body>
+        <div id="title_wrapper" style="padding-left: 0.3%; padding-right: 0.3%; width: 100%; height: 4%;">
+            <div id="title" style="text-align: center; vertical-align: middle; border: 2px dashed red;">
+                <h1> title_staff </h1>
+            </div>
+        </div>
+
+        <div id="content_wrapper" style="padding: 0.3%; height: 94.7%;">
+            <div id="filter_widget" style="width: 20%; height: 100%; border: 2px dashed yellow; float: left;">
+                <div id="filter" style="width: 100%; height: 55%; padding: 1%; padding-top: 10%; text-align: center; float: top; border: 2px dashed blue;">
+                    <h1> filter </h1>
+
+                    <div id="type_wrapper" style="padding: 5%; width: 100%; border: 1px dashed black">
+                        <div style="padding-bottom: 3%;"> 분류 </div>
+                        <div>
+                            <select id="types" multiple="" class="ui fluid dropdown">
+                                <option value="">선 택</option>
+                                <option value="Tree">보호수</option>
+                                <option value="Asset">문화재</option>
+                                <option value="Fire">화재</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="location_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
+                        <div style="padding-bottom: 3%;"> 지역 </div>
+                        <div>
+                            <select id="location" class="ui selection dropdown"> <!--onchange="on_select_location()"-->
+                                <option value="">선택</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="button_wrapper" style="margin-top: 5%; padding: 5%; width: 100%">
+                        <button class="ui primary button" onclick="on_button()">
+                            보기
+                        </button>
+                    </div>
+                </div>
+                <p>
+                    <div id="widget" style="width: 100%; height: 43%; text-align: center; border: 2px dashed slateblue">
+                        <h1>widget</h1>
+                    </div>
+                </p>
+            </div>
+
+            <div id="map_graph" style="width: 79.7%; float: right; border: 2px dashed gray">
+                <div id="map_wrapper" style="width: 69.7%; height: 100%; text-align: center; float: left; vertical-align: middle; border: 2px dashed green;">
+                    <div id="map" style="width: 100%; height: 100%; padding: 0.3%; background-color: yellow; opacity: 0.5;">
+                    </div>
+                </div>
+
+                <div id="graph_wrapper" style="width: 30%; height: 100%; text-align: center; float: right; vertical-align: middle; border: 2px dashed green;">
+                    <div id="graph1" style="width: 100%; height: 49.7%; padding: 0.3%; margin-bottom: 1%; border: 2px dashed rebeccapurple">
+                        <h1> graph1 </h1>
+                    </div>
+                    <div id="graph2" style="width: 100%; height: 49.7%; padding: 0.3%; border: 2px dashed rebeccapurple">
+                        <h1> graph2 </h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function on_button()
+            {
+                location_info = {'type': $('#types').dropdown('get value'), 'location': document.getElementById("location").value};
+
+                $.post('./get_map_data', location_info, function(data) {
+                    $('#map').html(data);
+                });
+            }
+
+            function on_select_location()
+            {
+                location_info = {'location': document.getElementById("location").value};
+                element_city = document.getElementById('cities');
+                element_city.innerHTML = '<option value="">선택</option>'
+
+                $.post('./get_city', location_info, function(data) {
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        var opt = document.createElement('option');
+                        opt.value = data[i];
+                        opt.innerHTML = data[i];
+                        element_city.appendChild(opt);
+                    }
+                });
+            }
+
+            $(document).ready(function() {
+                $('.ui.dropdown').dropdown();
+
+                $.get('./get_location', function(data) {
+                    element_island = document.getElementById('location');
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        var opt = document.createElement('option');
+                        opt.value = data[i];
+                        opt.innerHTML = data[i];
+                        element_island.appendChild(opt);
+                    }
+                });
+            })
+        </script>
+    </body>
+</html>

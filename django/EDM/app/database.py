@@ -18,7 +18,12 @@ class Database(Singleton):
         self.host = '18.223.6.165'
         self.user = 'root'
         self.passwd = ''
-        self.dbname = 'ProtectedForest'
+        self.dbname = 'EDMProject'
+
+        # self.host = 'localhost'
+        # self.user = 'root'
+        # self.passwd = 'autoset'
+        # self.dbname = 'edmproject'
 
         self.connection = MySQLdb.connect(host=self.host, user=self.user, passwd=self.passwd, db=self.dbname, charset='utf8')
 

@@ -7,6 +7,11 @@ class DBManager():
         self.passwd = ''
         self.dbname = 'EDMProject'
 
+        # self.host = 'localhost'
+        # self.user = 'root'
+        # self.passwd = 'autoset'
+        # self.dbname = 'EDMProject'
+
         self.connection = MySQLdb.connect(host=self.host, user=self.user, passwd=self.passwd, db=self.dbname, charset='utf8')
 
     def insert_row(self, table, columns, values):
@@ -14,7 +19,7 @@ class DBManager():
 
         column = ', '.join(['`{}`'.format(c) for c in columns])
         value = ', '.join(["'{}'".format(v) for v in values])
-        query = "INSERT INTO EDMProject.{} ({}) VALUES ({});".format(table, column, value)
+        query = "INSERT INTO {} ({}) VALUES ({});".format(table, column, value)
 
         print(query)
         cursor.execute(query)
