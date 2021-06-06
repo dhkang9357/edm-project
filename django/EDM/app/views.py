@@ -7,10 +7,32 @@ from .database import Database
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+
+class UserForm(UserCreationForm):
+    email = forms.EmailField(label="이메일")
+    class Meta:
+        model = User
+        fields = ("username", "email")
 
 def index(request):
-    # return render(request, 'app/index.html')
-    return render(request, 'app/index_staff.html')
+    user_id = str(request.user)
+
+    if user_id == 'AnonymousUser':
+        return HttpResponseRedirect('/login')
+
+    user_info = get_user_info(user_id)
+
+    if user_info['grade'] == 0:
+        return render(request, 'app/index.html', user_info)
+
+    return render(request, 'app/index_staff.html', user_info)
 
 def load_location(request):
     db = Database.instance()
@@ -22,14 +44,6 @@ def load_location(request):
 
 def load_city(request):
     pass
-#     location = request.POST.get('location')
-#     print(location)
-#     db = Database.instance()
-
-#     query = 'SELECT distinct(firelocation) FROM ProtectedForest.SearchedLocation2 where SearchedCity = "{}" and firelocation != "";'.format(location)
-#     location = db.run_query(query)
-#     print(location)
-#     return HttpResponse(json.dumps(location), content_type='text/json')
 
 def assign_tree_data(map, info):
     for index, location, id, type, y, x, address in info:
@@ -71,58 +85,93 @@ def assign_asset_data(map, info):
 
     return
 
-def assign_fire_data(map, info):
-    pass
-
 def get_default_position(location):
     db = Database.instance()
 
     query = 'SELECT y, x FROM EDMProject.LocationInfo where location = "{}";'.format(location)
-    position = db.run_query(query, True)
+    position = db.run_query(query)
 
     return position
 
-def load_map(request):
+def get_data(request):
     types = request.POST.getlist('type[]')
     location = request.POST.get('location')
 
+    data = dict()
+    data['map'] = get_map_data(types, location)
+    data['fire'] = get_fire_data(location)
+
+    print(data['fire'])
+
+    return HttpResponse(json.dumps(data), content_type='text/json')
+
+def get_fire_data(location):
     db = Database.instance()
 
-    print(types, location)
+    query = 'SELECT * FROM EDMProject.LocationInfo where location = "{}";'.format(location)
+    row_data = db.run_query(query)
+    fire_data = [int(v) for v in list(row_data[4:])]
+
+    return fire_data
+
+def get_map_data(types, location):
+    db = Database.instance()
 
     function_map = {
         'Tree': assign_tree_data,
         'Asset': assign_asset_data,
-        'Fire': assign_fire_data
     }
 
     default_position = get_default_position(location)
 
-    map = folium.Map(location=default_position, zoom_start=11, width='100%', height='94.7%')
+    map = folium.Map(location=default_position, zoom_start=10, width='100%', height='94.7%')
 
     for table in types:
         query = 'SELECT * FROM EDMProject.{} where location = "{}";'.format(table, location)
-        print(query)
-        info = db.run_query(query, True)
+        info = db.run_query(query)
 
         assign = function_map[table]
         assign(map, info)
 
-    # db = Database.instance()
+    return map._repr_html_()
 
-    # query = 'SELECT ForestLatitude, ForestLongitude FROM ProtectedForest.SearchedLocation2 where searchedCity = "{}" and Firelocation = "{}";'.format(location, city)
-    # positions = db.run_query(query, True)
+def get_fire_info():
+    pass
 
-    # print(positions)
+def get_user_info(user_id):
+    db = Database.instance()
+    query = "SELECT id, location, grade FROM EDMProject.UserInfo where id = '{}'".format(user_id)
+    info = db.run_query(query)
 
-    # position_y = [y for y, _ in positions]
-    # position_x = [x for y, x in positions]
+    user_info = {
+        'id': info[0],
+        'location': info[1],
+        'grade': info[2]
+    }
 
-    # mean_y = min(position_y) + ((max(position_y) - min(position_y)) / 2)
-    # mean_x = min(position_x) + ((max(position_x) - min(position_x)) / 2)
+    return user_info
 
-    # for y, x in positions:
-    #     popup = folium.Popup('y: {}, x: {}'.format(y, x), min_width=200, max_width=400)
-    #     folium.Marker(location=[y, x], popup=popup).add_to(map)
+def add_new_user(id, location):
+    db = Database.instance()
+    grade = 0
+    query = "INSERT INTO UserInfo (`id`, `location`, `grade`) VALUES ('{}', '{}', '{}');".format(id, location, grade)
+    db.run_query(query)
 
-    return HttpResponse(map._repr_html_(), content_type='text/html')
+def signup(request):
+    """
+    계정생성
+    """
+    if request.method == "POST":
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            location = request.POST.get('location')
+            add_new_user(username, location)
+            login(request, user)
+            return redirect('index')
+    else:
+        form = UserForm()
+    return render(request, 'app/signup.html', {'form': form})

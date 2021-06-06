@@ -23,11 +23,14 @@ from app import scripts
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view(template_name='app/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('signup/', views.signup, name='signup'),
 
     path('', views.index, name='index'),
     path('script.js', scripts.script),
 
-    path('get_map_data', views.load_map),
+
+    path('get_data', views.get_data),
     path('get_location', views.load_location),
     path('get_city', views.load_city),
 ]

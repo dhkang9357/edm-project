@@ -27,9 +27,13 @@ class Database(Singleton):
 
         self.connection = MySQLdb.connect(host=self.host, user=self.user, passwd=self.passwd, db=self.dbname, charset='utf8')
 
-    def run_query(self, query, origin = False):
+    def run_query(self, query):
         cursor = self.connection.cursor()
         cursor.execute(query)
-        ret = list(cursor.fetchall())
+        ret = cursor.fetchall()
         ret = ret[0] if len(ret) == 1 else [r for r in ret]
+
+        if 'INSERT' in query:
+          self.connection.commit()
+
         return ret

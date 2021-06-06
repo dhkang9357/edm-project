@@ -13,8 +13,13 @@
 
     <body>
         <div id="title_wrapper" style="padding-left: 0.3%; padding-right: 0.3%; width: 100%; height: 4%;">
-            <div id="title" style="text-align: center; vertical-align: middle; border: 2px dashed red;">
-                <h1> title </h1>
+            <div id="user_info_wrapper" style="padding-top: 3px; position: absolute; width: 20%; height: 3.5%; float: left; border: 2px dashed green; vertical-align: middle; text-align: center;">
+                <font style="font-size:15px;">
+                    {{user}} / {{location}} / <a href='logout'>로그아웃</a>
+                </font>
+            </div>
+            <div id="title" style="width: 100%; float: right;text-align: center; vertical-align: middle; ">
+                <h1> title_user </h1>
             </div>
         </div>
 
@@ -29,7 +34,6 @@
                             <option value="">선택</option>
                             <option value="Tree">보호수</option>
                             <option value="Asset">문화재</option>
-                            <option value="Fire">화재</option>
                         </select>
                     </div>
                 </div>
@@ -63,7 +67,7 @@
             </div>
 
             <div id="map_wrapper" style="width: 79.7%; height: 100%; text-align: center; float: right; vertical-align: middle; border: 2px dashed green;">
-                <div id="map" style="width: 100%; height: 100%; padding: 0.3%; background-color: yellow; opacity: 0.5;">
+                <div id="map" style="width: 100%; height: 100%; padding: 0.3%;">
                 </div>
             </div>
         </div>
@@ -73,8 +77,8 @@
             {
                 location_info = {'type': $('#types').dropdown('get value'), 'location': document.getElementById("location").value};
 
-                $.post('./get_map_data', location_info, function(data) {
-                    $('#map').html(data);
+                $.post('./get_data', location_info, function(data) {
+                    $('#map').html(data['map']);
                 });
             }
 

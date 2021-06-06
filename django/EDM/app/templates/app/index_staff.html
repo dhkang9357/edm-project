@@ -14,18 +14,28 @@
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script src="https://code.highcharts.com/modules/export-data.js"></script>
 
-
+        <style type="text/css">
+            body {
+              font-family:'Malgun Gothic';
+              font-size:10pt;
+            }
+            </style>
     </head>
 
     <body>
         <div id="title_wrapper" style="padding-left: 0.3%; padding-right: 0.3%; width: 100%; height: 4%;">
-            <div id="title" style="text-align: center; vertical-align: middle; border: 2px dashed red;">
+            <div id="user_info_wrapper" style="padding-top: 3px; position: absolute; width: 20%; height: 3.5%; float: left; border: 2px dashed green; vertical-align: middle; text-align: center;">
+                <font style="font-size:15px;">
+                    {{user}} / {{location}} / <a href='logout'>로그아웃</a>
+                </font>
+            </div>
+            <div id="title" style="width: 100%; float: right;text-align: center; vertical-align: middle; ">
                 <h1> title_staff </h1>
             </div>
         </div>
 
         <div id="content_wrapper" style="padding: 0.3%; height: 94.7%;">
-            <div id="filter_widget" style="width: 20%; height: 100%; border: 2px dashed yellow; float: left;">
+            <div id="filter_widget" style="width: 20%; height: 100%;float: left;">
                 <div id="filter" style="width: 100%; height: 55%; padding: 5%; padding-top: 10%; text-align: center; float: top; border: 2px dashed blue;">
                     <h1> filter </h1>
 
@@ -36,7 +46,6 @@
                                 <option value="">선택</option>
                                 <option value="Tree">보호수</option>
                                 <option value="Asset">문화재</option>
-                                <option value="Fire">화재</option>
                             </select>
                         </div>
                     </div>
@@ -63,13 +72,13 @@
                 </p>
             </div>
 
-            <div id="map_graph" style="width: 79.7%; float: right; border: 2px dashed gray">
+            <div id="map_graph" style="width: 79.7%; float: right;">
                 <div id="map_wrapper" style="width: 69.7%; height: 100%; text-align: center; float: left; vertical-align: middle; border: 2px dashed green;">
-                    <div id="map" style="width: 100%; height: 100%; padding: 0.3%; background-color: yellow; opacity: 0.5;">
+                    <div id="map" style="width: 100%; height: 100%; padding: 0.3%;">
                     </div>
                 </div>
 
-                <div id="graph_wrapper" style="width: 30%; height: 100%; text-align: center; float: right; vertical-align: middle; border: 2px dashed green;">
+                <div id="graph_wrapper" style="width: 30%; height: 100%; text-align: center; float: right; vertical-align: middle;">
                     <div id="graph1" style="width: 100%; height: 49.7%; padding: 0.3%; margin-bottom: 1%; border: 2px dashed rebeccapurple">
                         <h1> graph1 </h1>
                     </div>
@@ -83,10 +92,14 @@
         <script>
             function on_button()
             {
-                location_info = {'type': $('#types').dropdown('get value'), 'location': document.getElementById("location").value};
+                type_value = $('#types').dropdown('get value');
+                location_value = document.getElementById("location").value;
 
-                $.post('./get_map_data', location_info, function(data) {
-                    $('#map').html(data);
+                params = {'type': type_value, 'location': location_value};
+
+                $.post('./get_data', params, function(data) {
+                    $('#map').html(data['map']);
+                    refresh_graph1(location_value, data['fire']);
                 });
             }
 
@@ -107,26 +120,14 @@
                 });
             }
 
-            $(document).ready(function() {
-                $('.ui.dropdown').dropdown();
-
-                $.get('./get_location', function(data) {
-                    element_island = document.getElementById('location');
-                    for (var i = 0; i < data.length; i++)
-                    {
-                        var opt = document.createElement('option');
-                        opt.value = data[i];
-                        opt.innerHTML = data[i];
-                        element_island.appendChild(opt);
-                    }
-                });
-
+            function refresh_graph1(location, fire_data)
+            {
                 Highcharts.chart('graph1', {
                     chart: {
                         type: 'column'
                     },
                     title: {
-                        text: 'Histogram using a column chart'
+                        text: location + ' 월별 화재 건수'
                     },
                     subtitle: {
                         text: ''
@@ -157,7 +158,7 @@
                     tooltip: {
                         headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                         pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                        '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
                         footerFormat: '</table>',
                         shared: true,
                         useHTML: true
@@ -167,13 +168,28 @@
                         pointPadding: 0,
                         borderWidth: 0,
                         groupPadding: 0,
-                        shadow: false
+                        shadow: true
                         }
                     },
                     series: [{
-                        name: 'Data',
-                        data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 124.1, 95.6, 54.4]
+                        name: '건수',
+                        data: fire_data
                     }]
+                });
+            }
+
+            $(document).ready(function() {
+                $('.ui.dropdown').dropdown();
+
+                $.get('./get_location', function(data) {
+                    element_island = document.getElementById('location');
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        var opt = document.createElement('option');
+                        opt.value = data[i];
+                        opt.innerHTML = data[i];
+                        element_island.appendChild(opt);
+                    }
                 });
             })
         </script>

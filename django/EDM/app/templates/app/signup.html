@@ -3,9 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <script>
+        function getloc()
+        {
+            return document.getElementById("location").value;
+        }
+    </script>
 </head>
 <body>
-{% extends "base.html" %}
+{% extends "./base.html" %}
 {% block content %}
 <div class="container my-3">
     <div class="row my-3">
@@ -13,12 +20,12 @@
             <h4>계정생성</h4>
         </div>
         <div class="col-8 text-right">
-            <span>또는 <a href="{% url 'common:login' %}">로그인 하세요.</a></span>
+            <span>또는 <a href="{% url 'login' %}">로그인 하세요.</a></span>
         </div>
     </div>
     <form method="post" class="post-form">
         {% csrf_token %}
-        {% include "form_errors.html" %}
+        {% include "./form_errors.html" %}
         <div class="form-group">
             <label for="username">사용자 이름</label>
             <input type="text" class="form-control" name="username" id="username"
@@ -38,6 +45,31 @@
             <label for="email">이메일</label>
             <input type="text" class="form-control" name="email" id="email"
                    value="{{ form.email.value|default_if_none:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="location">거주지역</label>
+            <p>
+                <select id="location" class="form-control ui selection dropdown" name="location" value='getloc()'>
+                    <option value="서울특별시">서울특별시</option>
+                    <option value="부산광역시">부산광역시</option>
+                    <option value="대구광역시">대구광역시</option>
+                    <option value="인천광역시">인천광역시</option>
+                    <option value="광주광역시">광주광역시</option>
+                    <option value="울산광역시">울산광역시</option>
+                    <option value="세종특별자치시">세종특별자치시</option>
+                    <option value="경기도">경기도</option>
+                    <option value="강원도">강원도</option>
+                    <option value="충청북도">충청북도</option>
+                    <option value="충청남도">충청남도</option>
+                    <option value="전라북도">전라북도</option>
+                    <option value="전라남도">전라남도</option>
+                    <option value="경상북도">경상북도</option>
+                    <option value="경상남도">경상남도</option>
+                    <option value="제주특별자치도">제주특별자치도</option>
+                </select>
+            </p>
+            <!--input type="text" class="form-control" name="location" id="location"
+                   value="{{ form.location.value|default_if_none:'경기도' }}"-->
         </div>
         <button type="submit" class="btn btn-primary">생성하기</button>
     </form>
