@@ -14,7 +14,7 @@ def get_weather_widget(location):
     chrome_options = webdriver.ChromeOptions()
     chrome_options.headless = True
 
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'chromedriver.exe')
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'chromedriver')
     
     driver = webdriver.Chrome(path, chrome_options=chrome_options)
     driver.get(url)
