@@ -19,51 +19,53 @@
                 </font>
             </div>
             <div id="title" style="width: 100%; float: right;text-align: center; vertical-align: middle; ">
-                <h1> title_user </h1>
+                <h1> 1조 </h1>
             </div>
         </div>
 
         <div id="content_wrapper" style="padding: 0.3%; height: 94.7%;">
-            <div id="filter" style="width: 20%; height: 100%; padding: 1%; padding-top: 10%; text-align: center; float: left; vertical-align: middle; border: 2px dashed blue;">
-                <h1> filter </h1>
+            <div id="filter_widget" style="width: 20%; height: 100%;float: left;">
+                <div id="filter" style="width: 100%; height: 55%; padding: 5%; padding-top: 10%; text-align: center; float: top; border: 2px dashed blue;">
+                    <h1 style="color: white;"> filter </h1>
 
-                <div id="type_wrapper" style="padding: 5%; width: 100%; border: 1px dashed black">
-                    <div style="padding-bottom: 3%;"> 분류 </div>
-                    <div>
-                        <select id="types" multiple="" class="ui fluid dropdown">
-                            <option value="">선택</option>
-                            <option value="Tree">보호수</option>
-                            <option value="Asset">문화재</option>
-                        </select>
+                    <div id="type_wrapper" style="padding: 5%; width: 100%; border: 1px dashed black">
+                        <div style="padding-bottom: 3%;"> 분류 </div>
+                        <div>
+                            <select id="types" multiple="" class="ui fluid dropdown">
+                                <option value="">선택</option>
+                                <option value="Tree">보호수</option>
+                                <option value="Asset">문화재</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="location_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
+                        <div style="padding-bottom: 3%;"> 지역 </div>
+                        <div>
+                            <select id="location" class="ui selection dropdown"> <!--onchange="on_select_location()"-->
+                                <option value="">선택</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="button_wrapper" style="margin-top: 5%; padding: 5%; width: 100%">
+                        <button class="ui primary button" onclick="on_button()">
+                            보기
+                        </button>
                     </div>
                 </div>
+                <p>
+                    <div id="widget" style="width: 100%; height: 43%; text-align: center; border: 2px dashed slateblue;">
+                        <div id="weather" style="width: 100%; height: 49%; float: top; padding-top: 3%">
+                        </div>
 
-                <div id="location_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
-                    <div style="padding-bottom: 3%;"> 지역 </div>
-                    <div>
-                        <select id="location" class="ui selection dropdown"> <!--onchange="on_select_location()"-->
-                            <option value="">선택</option>
-                            <!--option value="서울">서울</option>
-                            <option value="경기도">경기도</option>
-                            <option value="강원도">강원도</option-->
-                        </select>
+                        <div id="clock" style="width: 100%; height: 49; float: bottom; margin-top: 5%;">
+                            <!-- clock widget start -->
+<script type="text/javascript"> var css_file=document.createElement("link"); css_file.setAttribute("rel","stylesheet"); css_file.setAttribute("type","text/css"); css_file.setAttribute("href","//s.bookcdn.com//css/cl/bw-cl-c22.css?v=0.0.1"); document.getElementsByTagName("head")[0].appendChild(css_file); </script> <div id="tw_22_1756950223"><div style="width:200px; height:px; margin: 0 auto;"><a href="https://booked.kr/time/hwaseong-41306">화성</a><br/></div></div> <script type="text/javascript"> function setWidgetData_1756950223(data){ if(typeof(data) != 'undefined' && data.results.length > 0) { for(var i = 0; i < data.results.length; ++i) { var objMainBlock = ''; var params = data.results[i]; objMainBlock = document.getElementById('tw_'+params.widget_type+'_'+params.widget_id); if(objMainBlock !== null) objMainBlock.innerHTML = params.html_code; } } } var clock_timer_1756950223 = -1; widgetSrc = "https://widgets.booked.net/time/info?ver=2;domid=593;type=22;id=1756950223;scode=2;city_id=41306;wlangid=24;mode=1;details=0;background=ffffff;border_color=ffffff;color=686868;add_background=ffffff;add_color=333333;head_color=ffffff;border=0;transparent=0"; var widgetUrl = location.href; widgetSrc += '&ref=' + widgetUrl; var wstrackId = "481482707"; if (wstrackId) { widgetSrc += ';wstrackId=' + wstrackId + ';' } var timeBookedScript = document.createElement("script"); timeBookedScript.setAttribute("type", "text/javascript"); timeBookedScript.src = widgetSrc; document.body.appendChild(timeBookedScript); </script>
+<!-- clock widget end -->
+                        </div>
                     </div>
-                </div>
-
-                <!--div id="city_wrapper" style="margin-top: 5%; padding: 5%; width: 100%; border: 1px dashed black">
-                    <div style="padding-bottom: 3%;"> 시 </div>
-                    <div>
-                        <select id="cities" class="ui selection dropdown">
-                            <option value="">선택</option>
-                        </select>
-                    </div>
-                </div-->
-
-                <div id="button_wrapper" style="margin-top: 5%; padding: 5%; width: 100%">
-                    <button class="ui primary button" onclick="on_button()">
-                        보기
-                    </button>
-                </div>
+                </p>
             </div>
 
             <div id="map_wrapper" style="width: 79.7%; height: 100%; text-align: center; float: right; vertical-align: middle; border: 2px dashed green;">
@@ -79,7 +81,15 @@
 
                 $.post('./get_data', location_info, function(data) {
                     $('#map').html(data['map']);
+                    refresh_widget(data['widget']);
                 });
+            }
+
+            function refresh_widget(data)
+            {
+                img_html = '<img alt="" src="data:image/png;base64,' + data + '" style="width: 97%; "/>'
+                element_weather = document.getElementById('weather');
+                element_weather.innerHTML = img_html;
             }
 
             function on_select_location()

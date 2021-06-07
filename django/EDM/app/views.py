@@ -4,6 +4,7 @@ import folium
 import MySQLdb
 import statistics
 from .database import Database
+from . import weather, regression
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -39,7 +40,6 @@ def load_location(request):
 
     query = 'SELECT location FROM EDMProject.LocationInfo;'
     location = db.run_query(query)
-    print(location)
     return HttpResponse(json.dumps(location), content_type='text/json')
 
 def load_city(request):
@@ -100,17 +100,31 @@ def get_data(request):
     data = dict()
     data['map'] = get_map_data(types, location)
     data['fire'] = get_fire_data(location)
-
-    print(data['fire'])
+    data['regression'] = get_regression_data(location)
+    data['widget'] = weather.get_weather_widget(location)
 
     return HttpResponse(json.dumps(data), content_type='text/json')
+
+def get_regression_data(location):
+    db = Database.instance()
+    query = 'select firecount, humidity from fire where location="{}";'.format(location)
+    row_data = db.run_query(query)
+
+    X, Y = list(), list() # X: 화재건수, Y: 습도
+
+    for _x, _y in row_data:
+        X.append(_x)
+        Y.append(_y)
+
+    return regression.calculate(X, Y)
+
 
 def get_fire_data(location):
     db = Database.instance()
 
-    query = 'SELECT * FROM EDMProject.LocationInfo where location = "{}";'.format(location)
+    query = 'select location, month(date), sum(firecount) from fire where location="{}"  group by location, month(date);'.format(location)
     row_data = db.run_query(query)
-    fire_data = [int(v) for v in list(row_data[4:])]
+    fire_data = [int(row[2]) / 2 for row in row_data]
 
     return fire_data
 
